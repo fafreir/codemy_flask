@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+    {% block content %}
+    {% for message in get_flashed_messages() %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+
+        <h2>My first name is {{ first_name }} </h2>
+        <!-- safe é quando quero realmente renderizar algo, e aviso que é seguro -->
+        <p> {{ video | safe }} </p>
+
+        <!-- striptags - quero que esconda e não renderize as tags -->
+        <p> {{ video | striptags }} </p>
+
+        <!-- title - deixa as iniciais maiusculas -->
+        <p> {{ video | title }} </p>
+
+        <!-- Renderizando listas -->
+        <p> {{ lista }} </p>
+
+        <!-- for -->
+        {% for topping in lista %}
+            <li> {{ topping }} </li>
+        {% endfor %}
+
+        <!-- Acess for index-->
+        <p> 1) {{ lista.0 }} </p>
+        <p> 2) {{ lista.1 }} </p>
+
+        {% if 1989 in lista %}
+                <p> Tem na lista 1989 </p>
+        {% else %}
+                <p> Não localizado </p>
+        {% endif%}
+
+    {% endblock%}
