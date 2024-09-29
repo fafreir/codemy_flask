@@ -6,6 +6,7 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import date
 
 app = Flask(__name__)
 # app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -117,9 +118,36 @@ def page_not_found(e):
 # Create a Form Class
 
 
+class PasswordForm(FlaskForm):
+    email = StringField("What's your email?", validators=[DataRequired()])
+    password_hash = PasswordField(
+        "What's your password?", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
+
 class NamerForm(FlaskForm):
     name = StringField("What's your name?", validators=[DataRequired()])
     submit = SubmitField("Submit")
+
+
+@ app.route('/test_pw', methods=['GET', 'POST'])
+def test_pw():
+    email = None
+    password = None
+    pw_to_check = None
+    passed = None
+    form = PasswordForm()
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.password_hash.data
+
+        form.email.data = ''
+        form.password_hash.data = ''
+
+        pw_to_check = Users.query.filter_by(email=email).first()
+        passed = check_password_hash(pw_to_check.password_hash, password)
+        # flash("Form submitted Sucessfully!")
+    return render_template("test_pw.html", email=email, password=password, pw_to_check=pw_to_check, passed=passed, form=form)
 
 
 @ app.route('/name', methods=['GET', 'POST'])
@@ -131,6 +159,11 @@ def name():
         # form.name.data = ''
         flash("Form submitted Sucessfully!")
     return render_template("name.html", name=name, form=form)
+
+
+@app.route('/date')
+def get_current_date():
+    return {"Date": date.today()}
 
 
 @app.route('/update/<int:id>', methods=['GET', 'POST'])
